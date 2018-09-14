@@ -22,6 +22,7 @@ namespace Demo
         private System.ComponentModel.IContainer components;
         private PictureBox pictureBox1;
         private Panel panel1;
+        //测试
 
         public MainForm()
         {
