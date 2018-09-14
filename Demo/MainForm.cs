@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using Demo.Properties;
 using System.ComponentModel;
+
 
 namespace Demo
 {
@@ -156,27 +158,15 @@ namespace Demo
             // 
             // pictureBox1
             // 
-            //this.pictureBox1.Image = Resources._7;
-            //this.pictureBox1.ImageLocation = "http://sc.admin5.com/uploads/allimg/130123/164144A36-10.gif";
-            //this.pictureBox1.ImageLocation = @"./test2.png";
-            this.pictureBox1.ImageLocation = @".\NewFolder2\3.jpg"; 
-
-
-            // Ensure WaitOnLoad is false.
-            // this.pictureBox1.WaitOnLoad = false;
-            // Load the image asynchronously.
-            //this.pictureBox1.LoadAsync(@"http://sc.admin5.com/uploads/allimg/130123/164144A36-10.gif");
-
-            //this.pictureBox1.Image = Image.FromStream(System.Net.WebRequest.Create(@"http://sc.admin5.com/uploads/allimg/130123/164144A36-10.gif").GetResponse().GetResponseStream());
-            //
-            //this.pictureBox1.Load(@"http://sc.admin5.com/uploads/allimg/130123/164144A36-10.gif");
-            this.pictureBox1.LoadProgressChanged += new ProgressChangedEventHandler(pictureBox1_LoadProgressChanged);
-
-            this.pictureBox1.Location = new System.Drawing.Point(12, 132);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 143);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(181, 177);
+            this.pictureBox1.Size = new System.Drawing.Size(421, 287);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.LoadCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.PictureBox1_LoadCompleted);
+            this.pictureBox1.LoadProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.pictureBox1_LoadProgressChanged);
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             // 
             // MainForm
             // 
@@ -187,6 +177,7 @@ namespace Demo
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
             this.Name = "MainForm";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.panel1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -199,6 +190,75 @@ namespace Demo
     ProgressChangedEventArgs e)
         {
             Console.WriteLine("图片进度：" + e.ProgressPercentage);
+        }
+
+        private void PictureBox1_LoadCompleted(Object sender, AsyncCompletedEventArgs e)
+        {
+            Console.WriteLine("Load Completed 执行完毕");
+        }
+
+        private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            GraphicsPath gp = new GraphicsPath();
+            Pen redp = new Pen(Color.Red, 3.0f);
+            Pen bluep = new Pen(Color.Blue, 1.0f);
+            Pen purplep = new Pen(Color.Purple, 2.0f);
+            Pen greenp = new Pen(Color.Green, 1.5f);
+            SolidBrush sb = new SolidBrush(Color.LightBlue);
+
+
+
+            // Create a matrix and rotate it 45 degrees.
+            Matrix myMatrix = new Matrix(2.0f,1.0f,0.0f,1.0f,0.0f,0.0f);
+            Matrix myMatrix2 = new Matrix(0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f);
+            Matrix myMatrix3 = new Matrix(1.0f, 0.0f, 0.0f, 1.0f, 250.0f, 50.0f);
+
+            myMatrix.Multiply(myMatrix2);
+
+            for (int i = 0; i < 6; i++) {
+                Console.WriteLine("m1xm2: Elements[" + i + "] = " + myMatrix.Elements[i]);
+            }
+
+            myMatrix.Multiply(myMatrix3, MatrixOrder.Prepend);
+
+            for (int i = 0; i < 6; i++)
+            {
+                Console.WriteLine("m1xm2xm3: Elements[" + i + "] = " + myMatrix.Elements[i]);
+            }
+
+            g.DrawRectangle(bluep, 0.0f,0.0f,420.0f,286.0f);
+            
+
+            Matrix m = new Matrix();
+            //m.Scale(2, 2, MatrixOrder.Append);
+            m.Translate(100, 100);
+
+            Point[] myArray =
+             {
+                 new Point(20, 20),
+                 new Point(120, 20),
+                 new Point(120, 120),
+                 new Point(20, 120)
+                 ,new Point(20,20)
+             };
+
+            g.DrawLines(redp, myArray);
+
+            m.TransformPoints(myArray);
+
+            g.DrawLines(bluep, myArray);
+
+            m.Reset();
+            m.TransformPoints(myArray);
+
+            g.DrawLines(purplep, myArray);
+
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
